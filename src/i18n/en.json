@@ -1,10 +1,10 @@
 {
-  "title": "Tandem Skydiving Registration - Paradive",
+  "title": "Tandem Skydiving Registration",
   "subtitle": "Please fill in the following details",
   "firstName": "First Name",
-  "firstNamePlaceholder": "Enter first name",
+  "firstNamePlaceholder": "First Name",
   "lastName": "Last Name",
-  "lastNamePlaceholder": "Enter last name",
+  "lastNamePlaceholder": "Last Name",
   "idNumber": "ID Number",
   "idNumberPlaceholder": "9 digits",
   "birthDate": "Birth Date",

@@ -1,10 +1,10 @@
 {
-  "title": "הרשמה לצניחה טנדם - Paradive",
+  "title": "הרשמה לצניחה טנדם",
   "subtitle": "אנא מלא את הפרטים הבאים",
   "firstName": "שם פרטי",
-  "firstNamePlaceholder": "הזן שם פרטי",
+  "firstNamePlaceholder": "שם פרטי",
   "lastName": "שם משפחה",
-  "lastNamePlaceholder": "הזן שם משפחה",
+  "lastNamePlaceholder": "שם משפחה",
   "idNumber": "תעודת זהות",
   "idNumberPlaceholder": "9 ספרות",
   "birthDate": "תאריך לידה",
