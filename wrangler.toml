@@ -1,0 +1,42 @@
+# Cloudflare Workers Configuration
+# Migrated from Pages to Workers for assets-only React SPA deployment
+
+name = "paradive-landing"
+account_id = "25a2df56c26faf86bc9de7a9f31fbc9a"
+compatibility_date = "2025-11-08"
+
+# Assets configuration for static React SPA
+[assets]
+directory = "dist"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"
+
+# Build configuration (optional - can build separately)
+[build]
+command = "npm run build"
+
+# Custom Domain configuration
+[[routes]]
+pattern = "paradive.binatrix.io"
+custom_domain = true
+
+# Optional: Environment variables (if needed in the future)
+# [vars]
+# SOME_VAR = "value"
+
+# Optional: KV namespaces bindings (if needed in the future)
+# [[kv_namespaces]]
+# binding = "MY_KV"
+# id = "your-kv-namespace-id"
+
+# Optional: D1 database bindings (if needed in the future)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "your-database-name"
+# database_id = "your-database-id"
+
+# Optional: Production environment configuration
+# [env.production]
+# name = "paradive-landing-production"
+# [env.production.vars]
+# ENVIRONMENT = "production"

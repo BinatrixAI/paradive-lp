@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Modern bilingual (Hebrew RTL / English LTR) landing page for Paradive skydiving company built with React 18, TypeScript, Vite, Tailwind CSS, and Flowbite React components. The form collects user information with Israeli ID validation and redirects to Jotform for further processing.
 
+**Live URLs:**
+- Production: https://paradive.binatrix.io
+- Workers.dev: https://paradive-landing.oqva-account.workers.dev
+
 ## Essential Commands
 
 ```bash
@@ -19,7 +23,8 @@ npm run build            # TypeScript compile + Vite production build → dist/
 npm run preview          # Preview production build locally
 
 # Deployment
-npm run deploy           # Build and deploy to Cloudflare Pages via Wrangler
+npm run deploy           # Build and deploy to Cloudflare Workers (OQVA account)
+npm run deploy:production # Deploy to production environment
 ```
 
 ## Architecture & Key Patterns
@@ -27,34 +32,48 @@ npm run deploy           # Build and deploy to Cloudflare Pages via Wrangler
 ### Technology Stack
 - **Framework**: React 18 with TypeScript (strict mode)
 - **Build Tool**: Vite 5 (ES modules, fast HMR)
-- **UI Components**: Flowbite React (NOT vanilla Flowbite)
+- **UI Components**: Flowbite React v0.12.10 + Flowbite v3.1.2 (Tailwind plugin)
 - **Styling**: Tailwind CSS 3 with RTL support via logical properties
 - **i18n**: react-i18next with Hebrew (default) and English
-- **Deployment**: Cloudflare Pages
+- **Deployment**: Cloudflare Workers (migrated from Pages)
+- **CI/CD**: GitHub Actions for automated deployments
+- **Wrangler**: v4.46.0 (latest)
+- **Account**: OQVA (`25a2df56c26faf86bc9de7a9f31fbc9a`)
 - **Node**: Requires 18.0.0+
 
 ### Project Structure
 ```
-src/
-├── main.tsx                     # Entry point (mounts React app)
-├── App.tsx                      # Main component with i18n initialization
-├── components/
-│   ├── RegistrationForm.tsx     # Main form with Flowbite components
-│   ├── LanguageSwitcher.tsx     # Flag-based language toggle (🇮🇱/🇬🇧)
-│   ├── FormField.tsx            # Reusable form field wrapper
-│   └── PhoneInput.tsx           # Phone input with country code selector
-├── utils/
-│   ├── validation.ts            # Israeli ID (Luhn algorithm), phone, name validation
-│   ├── formatting.ts            # Phone (+country-area-number), date (YYYY-MM-DD)
-│   └── redirect.ts              # Jotform URL builder with query params
-├── i18n/
-│   ├── index.ts                 # i18next configuration (default: he)
-│   ├── he.json                  # Hebrew translations
-│   └── en.json                  # English translations
-├── types/
-│   └── form.ts                  # TypeScript interfaces (FormData, ValidationErrors, etc.)
-└── styles/
-    └── index.css                # Tailwind directives (@tailwind base/components/utilities)
+.
+├── .github/
+│   └── workflows/
+│       └── deploy.yml           # GitHub Actions CI/CD workflow
+├── public/
+│   └── assets/
+│       └── paradive-logo.png    # Static assets (Vite copies to dist/)
+├── src/
+│   ├── main.tsx                 # Entry point (mounts React app)
+│   ├── App.tsx                  # Main component with i18n initialization
+│   ├── components/
+│   │   ├── RegistrationForm.tsx # Main form with Flowbite components
+│   │   ├── LanguageSwitcher.tsx # Flag-based language toggle (🇮🇱/🇬🇧)
+│   │   ├── FormField.tsx        # Reusable form field wrapper
+│   │   └── PhoneInput.tsx       # Phone input with country code selector
+│   ├── utils/
+│   │   ├── validation.ts        # Israeli ID (Luhn algorithm), phone, name validation
+│   │   ├── formatting.ts        # Phone (+country-area-number), date (YYYY-MM-DD)
+│   │   └── redirect.ts          # Jotform URL builder with query params
+│   ├── i18n/
+│   │   ├── index.ts             # i18next configuration (default: he)
+│   │   ├── he.json              # Hebrew translations
+│   │   └── en.json              # English translations
+│   ├── types/
+│   │   └── form.ts              # TypeScript interfaces (FormData, ValidationErrors, etc.)
+│   └── styles/
+│       └── index.css            # Tailwind directives (@tailwind base/components/utilities)
+├── wrangler.toml                # Cloudflare Workers configuration
+├── MIGRATION_PAGES_TO_WORKERS.md # Migration documentation
+├── WORKERS_QUICK_START.md       # Workers quick reference
+└── GITHUB_DEPLOYMENT_SETUP.md   # CI/CD setup guide
 ```
 
 ### Critical Implementation Requirements
@@ -207,15 +226,44 @@ const handleSubmit = (e: React.FormEvent) => {
 
 ## Deployment
 
-### Cloudflare Pages (Primary Method)
-1. Build command: `npm run build`
-2. Output directory: `dist`
-3. Auto-deploys on git push (when connected to GitHub)
+### Cloudflare Workers (Primary Method)
+**Account**: OQVA (`25a2df56c26faf86bc9de7a9f31fbc9a`)
+**Custom Domain**: paradive.binatrix.io
 
-### Manual Deploy
-```bash
-npm run deploy  # Runs build + wrangler pages deploy dist
+#### Configuration (wrangler.toml)
+```toml
+name = "paradive-landing"
+account_id = "25a2df56c26faf86bc9de7a9f31fbc9a"
+compatibility_date = "2025-11-08"
+
+[assets]
+directory = "dist"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"
+
+[[routes]]
+pattern = "paradive.binatrix.io"
+custom_domain = true
 ```
+
+#### Deployment Methods
+
+**1. Manual Deploy (Local)**
+```bash
+npm run deploy              # Build + deploy to Workers
+npm run deploy:production   # Deploy to production environment
+```
+
+**2. Automated Deploy (GitHub Actions)**
+- Auto-deploys on push to `main` branch
+- Requires GitHub secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
+- See `GITHUB_DEPLOYMENT_SETUP.md` for setup instructions
+
+#### Asset Management
+- Static files must be in `public/` directory
+- Vite copies `public/` contents to `dist/` during build
+- Workers Assets serves files from `dist/` directory
+- Logo location: `public/assets/paradive-logo.png` → `/assets/paradive-logo.png`
 
 ## Important Notes
 
@@ -248,13 +296,26 @@ npm run deploy  # Runs build + wrangler pages deploy dist
 
 ## Additional Resources
 
-Refer to these files for detailed specifications:
+### Documentation Files
+- [README.md](README.md) - Project overview and quick start
+- [MIGRATION_PAGES_TO_WORKERS.md](MIGRATION_PAGES_TO_WORKERS.md) - Pages to Workers migration guide
+- [WORKERS_QUICK_START.md](WORKERS_QUICK_START.md) - Cloudflare Workers quick reference
+- [GITHUB_DEPLOYMENT_SETUP.md](GITHUB_DEPLOYMENT_SETUP.md) - CI/CD setup instructions
 - [clinerules-react.txt](clinerules-react.txt) - Complete development rules and requirements
-- [README_REACT.md](README_REACT.md) - Project overview and features
+- [README_REACT.md](README_REACT.md) - Original React project overview
 - [GETTING_STARTED_REACT.md](GETTING_STARTED_REACT.md) - Setup guide and workflow
 
+### Key Configuration Files
+- `wrangler.toml` - Cloudflare Workers configuration
+- `.github/workflows/deploy.yml` - GitHub Actions workflow
+- `tailwind.config.js` - Tailwind + Flowbite plugin configuration
+- `vite.config.ts` - Vite build configuration
+- `tsconfig.json` - TypeScript configuration
+
+### External Documentation
 For latest library documentation, use the Context7 MCP tool to fetch up-to-date docs for:
 - Flowbite React
 - react-i18next
 - Vite
 - Tailwind CSS
+- Cloudflare Workers
