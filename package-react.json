@@ -1,0 +1,35 @@
+{
+  "name": "paradive-landing-react",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Modern React landing page for Paradive skydiving with Flowbite components",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "deploy": "npm run build && wrangler pages deploy dist"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "flowbite-react": "^0.10.2",
+    "i18next": "^23.16.4",
+    "react-i18next": "^15.1.0",
+    "react-icons": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "wrangler": "^3.80.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

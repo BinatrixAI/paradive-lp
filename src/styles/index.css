@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for RTL support */
+@layer base {
+  html[dir='rtl'] {
+    text-align: start;
+  }
+
+  html[dir='ltr'] {
+    text-align: start;
+  }
+}
+
+/* Ensure Rubik font is applied */
+body {
+  font-family: 'Rubik', system-ui, sans-serif;
+}
+
+/* Additional form styling */
+@layer components {
+  .form-container {
+    @apply max-w-2xl mx-auto;
+  }
+}

@@ -1,0 +1,29 @@
+/* CSS HEX */
+--mandalay: #b18616;
+--scooter: #31b6d8;
+--kabul: #644e43;
+--cararra: #e9e9e1;
+--green-smoke: #9fb06b;
+--zorba: #9e9089;
+--straw: #d9c48e;
+--silver-rust: #c7bfbb;
+
+/* SCSS HEX */
+$mandalay: #b18616;
+$scooter: #31b6d8;
+$kabul: #644e43;
+$cararra: #e9e9e1;
+$green-smoke: #9fb06b;
+$zorba: #9e9089;
+$straw: #d9c48e;
+$silver-rust: #c7bfbb;
+
+/* SCSS RGB */
+$mandalay: rgba(177,134,22,1);
+$scooter: rgba(49,182,216,1);
+$kabul: rgba(100,78,67,1);
+$cararra: rgba(233,233,225,1);
+$green-smoke: rgba(159,176,107,1);
+$zorba: rgba(158,144,137,1);
+$straw: rgba(217,196,142,1);
+$silver-rust: rgba(199,191,187,1);

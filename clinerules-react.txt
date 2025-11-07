@@ -1,0 +1,533 @@
+# Paradive Landing Page - React/TypeScript/Flowbite
+
+## Project Context
+Modern React-based landing page for Paradive skydiving company with Flowbite components, full RTL support, and TypeScript.
+
+## Development Environment
+- **IDE**: VSCode
+- **Terminal**: Warp or VSCode integrated
+- **Framework**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS + Flowbite React
+- **Deployment**: Cloudflare Pages
+- **i18n**: react-i18next
+
+## Technology Stack
+
+### Core
+- React 18.3+
+- TypeScript 5.x
+- Vite 5.x
+
+### UI & Styling
+- Tailwind CSS 3.x
+- Flowbite React 0.10+
+- PostCSS
+- Autoprefixer
+
+### i18n
+- react-i18next
+- i18next
+
+### Validation
+- Custom Israeli ID validation
+- Custom phone validation
+
+### Deployment
+- Cloudflare Worker
+- Wrangler (for local preview)
+
+## Project Structure
+
+```
+paradive-landing-react/
+├── src/
+│   ├── App.tsx                 # Main app component
+│   ├── main.tsx               # Entry point
+│   ├── components/
+│   │   ├── RegistrationForm.tsx    # Main form component
+│   │   ├── LanguageSwitcher.tsx    # Language toggle
+│   │   ├── FormField.tsx           # Reusable form field wrapper
+│   │   └── PhoneInput.tsx          # Phone with country code
+│   ├── utils/
+│   │   ├── validation.ts           # Israeli ID, phone validation
+│   │   ├── formatting.ts           # Phone, date formatting
+│   │   └── redirect.ts             # Jotform URL builder
+│   ├── i18n/
+│   │   ├── index.ts               # i18next setup
+│   │   ├── he.json                # Hebrew translations
+│   │   └── en.json                # English translations
+│   ├── types/
+│   │   └── form.ts                # TypeScript interfaces
+│   └── styles/
+│       └── index.css              # Tailwind imports
+├── public/
+│   └── paradive-logo.svg
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── tailwind.config.js
+├── postcss.config.js
+└── README.md
+```
+
+## Key Requirements
+
+### Must Implement
+
+1. **Flowbite Components**: Use Flowbite React components throughout
+   - TextInput with icons
+   - Select for gender
+   - Datepicker for birth date
+   - Button for submit
+   - Dropdown for language switcher
+   - Label components
+
+2. **Full RTL Support**:
+   - Use Tailwind RTL utilities (`rtl:` prefix)
+   - Set `dir="rtl"` on html element for Hebrew
+   - Set `dir="ltr"` for English
+   - Use logical properties (ms-, me-, ps-, pe-)
+
+3. **Bilingual (Hebrew/English)**:
+   - react-i18next for translations
+   - Default: Hebrew
+   - Flag icons for language switcher (Israel 🇮🇱, UK 🇬🇧)
+   - All text translated
+
+4. **Israeli ID Validation**:
+   - 9 digits exactly
+   - Luhn algorithm checksum
+   - Real-time validation feedback
+   - Red border + error message on invalid
+
+5. **Form Fields**:
+   - First Name (TextInput with user icon)
+   - Last Name (TextInput with user icon)
+   - ID Number (TextInput, numbers only)
+   - Birth Date (Datepicker)
+   - Gender (Select dropdown)
+   - Phone (Custom component with country selector)
+
+6. **Age Calculation**:
+   - Automatic from birth date
+   - Determine if minor (<18)
+   - Pass to Jotform
+
+7. **Session Token**:
+   - Generate UUID on form load
+   - Pass to Jotform
+
+8. **Redirect to Jotform**:
+   - Build URL with all parameters
+   - window.location.href redirect
+
+### Validation Rules
+
+| Field | Rule |
+|-------|------|
+| firstName | Required, 2-50 chars, letters only (Hebrew/English) |
+| lastName | Required, 2-50 chars, letters only (Hebrew/English) |
+| idNumber | Required, 9 digits, valid Israeli ID checksum |
+| birthDate | Required, age 10-120 |
+| gender | Required, 'male' or 'female' |
+| phone | Required, valid format with country code |
+
+### Israeli ID Validation Algorithm
+
+```typescript
+function validateIsraeliID(id: string): boolean {
+  if (!/^\d{9}$/.test(id)) return false
+  
+  const weights = [1, 2, 1, 2, 1, 2, 1, 2, 1]
+  let sum = 0
+  
+  for (let i = 0; i < 9; i++) {
+    let digit = parseInt(id[i])
+    let weighted = digit * weights[i]
+    
+    if (weighted > 9) {
+      weighted = Math.floor(weighted / 10) + (weighted % 10)
+    }
+    
+    sum += weighted
+  }
+  
+  return sum % 10 === 0
+}
+```
+
+## Component Guidelines
+
+### Use Flowbite React Components
+
+```tsx
+import { TextInput, Select, Button, Datepicker, Label } from 'flowbite-react'
+
+// Example: First Name
+<div>
+  <Label htmlFor="firstName" value={t('firstName')} />
+  <TextInput
+    id="firstName"
+    icon={HiUser}
+    placeholder={t('firstNamePlaceholder')}
+    value={formData.firstName}
+    onChange={(e) => handleChange('firstName', e.target.value)}
+    color={errors.firstName ? 'failure' : 'gray'}
+    helperText={errors.firstName ? t(errors.firstName) : ''}
+  />
+</div>
+```
+
+### RTL Support Pattern
+
+```tsx
+// In main component or App.tsx
+import { useTranslation } from 'react-i18next'
+
+function App() {
+  const { i18n } = useTranslation()
+  const dir = i18n.language === 'he' ? 'rtl' : 'ltr'
+  
+  useEffect(() => {
+    document.documentElement.dir = dir
+    document.documentElement.lang = i18n.language
+  }, [dir, i18n.language])
+  
+  return (
+    <div className="min-h-screen">
+      {/* Components */}
+    </div>
+  )
+}
+```
+
+### Use Tailwind RTL Utilities
+
+```tsx
+// Wrong: Conditional classNames
+className={dir === 'rtl' ? 'mr-2' : 'ml-2'}
+
+// Right: Tailwind RTL utilities
+className="ms-2"  // margin-start (left in LTR, right in RTL)
+className="me-2"  // margin-end
+className="ps-4"  // padding-start
+className="pe-4"  // padding-end
+```
+
+## TypeScript Interfaces
+
+```typescript
+// src/types/form.ts
+
+export interface FormData {
+  firstName: string
+  lastName: string
+  idNumber: string
+  birthDate: string // YYYY-MM-DD
+  gender: 'male' | 'female' | ''
+  phone: string
+  countryCode: string
+}
+
+export interface CalculatedData {
+  age: number
+  isMinor: boolean
+  sessionToken: string
+}
+
+export interface ValidationErrors {
+  firstName?: string
+  lastName?: string
+  idNumber?: string
+  birthDate?: string
+  gender?: string
+  phone?: string
+}
+
+export interface JotformParams extends FormData, CalculatedData {
+  language: string
+}
+```
+
+## Coding Standards
+
+### TypeScript
+- Use strict mode
+- Define interfaces for all data structures
+- No `any` types (use `unknown` if needed)
+- Use proper generics
+- Export types from dedicated files
+
+### React
+- Functional components only (no classes)
+- Use hooks (useState, useEffect, useCallback, useMemo)
+- Custom hooks for reusable logic
+- Props should have TypeScript interfaces
+
+### Naming
+- Components: PascalCase (`RegistrationForm.tsx`)
+- Utilities: camelCase (`validation.ts`)
+- Interfaces: PascalCase with 'I' prefix optional (`FormData` or `IFormData`)
+- Constants: UPPER_SNAKE_CASE
+
+### File Organization
+- One component per file
+- Export component as default
+- Export types as named exports
+- Keep related files together
+
+## Development Workflow
+
+### Initial Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+```
+
+### Development
+
+```bash
+# Dev server with hot reload
+npm run dev
+
+# Type checking
+npm run type-check
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+### Deployment
+
+```bash
+# Deploy to Cloudflare Pages
+npm run deploy
+
+# Or use Wrangler
+wrangler pages deploy dist
+```
+
+## Flowbite Configuration
+
+### tailwind.config.js
+
+```javascript
+module.exports = {
+  content: [
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
+    'node_modules/flowbite-react/lib/esm/**/*.js'
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Rubik', 'sans-serif'] // Good for Hebrew
+      }
+    }
+  },
+  plugins: [
+    require('flowbite/plugin')
+  ]
+}
+```
+
+## i18n Configuration
+
+### src/i18n/index.ts
+
+```typescript
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import he from './he.json'
+import en from './en.json'
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      he: { translation: he },
+      en: { translation: en }
+    },
+    lng: 'he', // Default language
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false
+    }
+  })
+
+export default i18n
+```
+
+## Form Submission Flow
+
+```typescript
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  
+  // 1. Validate all fields
+  const validationErrors = validateForm(formData)
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors)
+    return
+  }
+  
+  // 2. Calculate age and minor status
+  const age = calculateAge(formData.birthDate)
+  const isMinor = age < 18
+  
+  // 3. Generate session token
+  const sessionToken = crypto.randomUUID()
+  
+  // 4. Build Jotform URL
+  const jotformUrl = buildJotformURL({
+    ...formData,
+    age,
+    isMinor,
+    sessionToken,
+    language: i18n.language
+  })
+  
+  // 5. Redirect
+  window.location.href = jotformUrl
+}
+```
+
+## Performance Optimization
+
+1. **Code Splitting**: Vite does this automatically
+2. **Lazy Loading**: Use React.lazy for heavy components
+3. **Memoization**: Use useMemo and useCallback
+4. **Tree Shaking**: Vite handles this
+5. **Asset Optimization**: Vite optimizes images
+
+## Testing Strategy
+
+### Manual Testing Checklist
+- [ ] Hebrew language (RTL) displays correctly
+- [ ] English language (LTR) displays correctly
+- [ ] Language switcher works
+- [ ] Israeli ID validation works
+- [ ] All fields validate properly
+- [ ] Form submits and redirects
+- [ ] Mobile responsive (320px+)
+- [ ] Works on iOS Safari
+- [ ] Works on Android Chrome
+
+### Type Checking
+```bash
+npm run type-check
+```
+
+## Critical Notes
+
+- **Flowbite React** - Use React components, not vanilla Flowbite
+- **RTL Support** - Set `dir` on html element, use Tailwind RTL utilities
+- **Israeli ID** - Must validate with Luhn algorithm
+- **Phone Format** - Format as +{country}-{area}-{number}
+- **Date Format** - Send as YYYY-MM-DD to Jotform
+- **Session Token** - Use crypto.randomUUID()
+
+## Security
+
+- Input sanitization (React does this automatically)
+- No sensitive data storage (stateless)
+- HTTPS enforced by Cloudflare Pages
+- Content Security Policy (set in Cloudflare)
+
+## Deployment to Cloudflare Pages
+
+### Method 1: GitHub Integration (Recommended)
+1. Push to GitHub
+2. Connect repo to Cloudflare Pages
+3. Build command: `npm run build`
+4. Build output directory: `dist`
+5. Auto-deploys on git push
+
+### Method 2: Wrangler CLI
+```bash
+npm run build
+wrangler pages deploy dist
+```
+
+## Environment Variables
+
+Not needed for this project (no API keys, everything client-side)
+
+## Browser Support
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- iOS Safari 14+
+- Android Chrome 90+
+
+## DO NOT
+
+- ❌ Use vanilla Flowbite (use Flowbite React)
+- ❌ Use className conditions for RTL (use Tailwind utilities)
+- ❌ Store data in localStorage (privacy)
+- ❌ Use jQuery or other old libraries
+- ❌ Inline styles (use Tailwind classes)
+- ❌ Use `any` type in TypeScript
+
+## Success Criteria
+
+- ✅ All Flowbite React components used
+- ✅ Full TypeScript coverage
+- ✅ Perfect RTL support
+- ✅ All validations working
+- ✅ Both languages functional
+- ✅ Mobile responsive
+- ✅ Fast load time (<2s)
+- ✅ No console errors
+- ✅ Type-check passes
+- ✅ Successful redirect to Jotform
+
+## References
+
+- Flowbite React: https://flowbite-react.com
+- Tailwind CSS: https://tailwindcss.com
+- React i18next: https://react.i18next.com
+- Vite: https://vitejs.dev
+- Cloudflare Pages: https://pages.cloudflare.com
+
+## Commands Reference
+
+```bash
+# Setup
+npm install
+
+# Development
+npm run dev              # Start dev server
+npm run type-check       # Check TypeScript
+npm run lint            # Lint code (if configured)
+
+# Build
+npm run build           # Production build
+npm run preview         # Preview production build
+
+# Deploy
+npm run deploy          # Deploy to Cloudflare Pages
+wrangler pages deploy dist  # Alternative deploy
+```
+
+## Next Steps After Development
+
+1. Test on real devices (iOS, Android)
+2. Generate QR code with production URL
+3. Print and place QR code at Paradive
+4. Configure Jotform (Phase 2)
+5. Build Make.com integration (Phase 3)
+
+---
+
+**This is a complete rewrite with modern tooling. The previous vanilla JS approach was not suitable for this project's complexity.**
