@@ -24,6 +24,7 @@ interface InputWithIconProps {
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
   maxLength?: number
   pattern?: string
+  inputMode?: 'text' | 'numeric' | 'tel' | 'email' | 'url' | 'search' | 'none' | 'decimal'
   error?: string
   isRTL: boolean
 }
@@ -39,6 +40,7 @@ const InputWithIcon = ({
   onFocus,
   maxLength,
   pattern,
+  inputMode,
   error,
   isRTL
 }: InputWithIconProps) => {
@@ -77,6 +79,7 @@ const InputWithIcon = ({
           onFocus={onFocus}
           maxLength={maxLength}
           pattern={pattern}
+          inputMode={inputMode}
           max={type === 'date' ? '2015-07-14' : undefined}
         />
       </div>
@@ -264,6 +267,7 @@ export default function RegistrationForm() {
           }}
           maxLength={9}
           pattern="[0-9]{9}"
+          inputMode="numeric"
           error={errors.idNumber}
           isRTL={isRTL}
         />
