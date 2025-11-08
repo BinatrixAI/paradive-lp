@@ -324,14 +324,14 @@ export default function RegistrationForm() {
           )}
         </div>
 
-        {/* Phone - Responsive layout */}
+        {/* Phone - Always inline layout */}
         <div>
           <div className="mb-2 block">
             <Label htmlFor="phone">{t('phone')}</Label>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            {/* Country code - responsive width */}
-            <div className="w-full sm:w-36">
+          <div className="flex flex-row gap-2">
+            {/* Country code - fixed width for mobile and desktop */}
+            <div className="w-32 sm:w-36">
               <Select
                 id="countryCode"
                 value={formData.countryCode}
