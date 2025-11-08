@@ -25,6 +25,7 @@ export default defineConfig({
     }
   },
   server: {
+    host: true, // Allow access from network (mobile devices on same WiFi)
     port: 5173,
     open: true
   }

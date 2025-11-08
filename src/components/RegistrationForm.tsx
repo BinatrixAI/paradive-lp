@@ -312,7 +312,19 @@ export default function RegistrationForm() {
               onChange={(e) => handleChange('gender', e.target.value as 'male' | 'female' | '')}
               color={errors.gender ? 'failure' : undefined}
               style={isRTL ? { paddingRight: '2.5rem' } : { paddingLeft: '2.5rem' }}
-              className="transition-all duration-200"
+              theme={{
+                field: {
+                  select: {
+                    colors: {
+                      gray: `bg-gray-50 border-[#c7bfbb] text-[#644e43] focus:border-[#31b6d8] focus:ring-[#31b6d8]`,
+                      failure: `bg-gray-50 border-red-500 text-[#644e43] focus:border-red-500 focus:ring-red-500`
+                    },
+                    sizes: {
+                      md: 'p-2.5 text-sm'
+                    }
+                  }
+                }
+              }}
             >
               <option value="">{t('genderPlaceholder')}</option>
               <option value="male">{t('male')}</option>
@@ -336,7 +348,18 @@ export default function RegistrationForm() {
                 id="countryCode"
                 value={formData.countryCode}
                 onChange={(e) => handleChange('countryCode', e.target.value)}
-                className="[&>select]:py-2.5"
+                theme={{
+                  field: {
+                    select: {
+                      colors: {
+                        gray: `bg-gray-50 border-[#c7bfbb] text-[#644e43] focus:border-[#31b6d8] focus:ring-[#31b6d8]`
+                      },
+                      sizes: {
+                        md: 'p-2.5 text-sm'
+                      }
+                    }
+                  }
+                }}
               >
                 <option value="+972">🇮🇱 +972</option>
                 <option value="+1">🇺🇸 +1</option>
