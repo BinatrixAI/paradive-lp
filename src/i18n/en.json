@@ -9,6 +9,7 @@
   "idNumberPlaceholder": "9 digits",
   "birthDate": "Birth Date",
   "birthDatePlaceholder": "Your Birth Date",
+  "birthDateHelper": "Click to select date",
   "gender": "Gender",
   "genderPlaceholder": "Select gender",
   "male": "Male",

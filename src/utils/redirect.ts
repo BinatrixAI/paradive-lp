@@ -31,5 +31,24 @@ export function buildJotformURL(params: JotformParams): string {
  * @returns UUID v4 session token
  */
 export function generateSessionToken(): string {
-  return crypto.randomUUID()
+  // Try modern crypto.randomUUID() first (not supported on mobile Safari)
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+
+  // Fallback: Manual UUID v4 generation using crypto.getRandomValues() (better browser support)
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (crypto.getRandomValues(new Uint8Array(1))[0] % 16) | 0
+      const v = c === 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
+  }
+
+  // Last resort fallback: Use Math.random() (less secure but works everywhere)
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }

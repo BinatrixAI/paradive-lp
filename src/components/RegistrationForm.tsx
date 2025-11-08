@@ -98,13 +98,14 @@ export default function RegistrationForm() {
     firstName: '',
     lastName: '',
     idNumber: '',
-    birthDate: '', // Empty initially, will default to 2010-07-14 on focus
+    birthDate: '2010-07-14', // Default date for better mobile UX
     gender: '',
     phone: '',
     countryCode: '+972'
   })
 
   const [errors, setErrors] = useState<ValidationErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -181,25 +182,37 @@ export default function RegistrationForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
 
-    const validationErrors = validateForm()
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
+    if (isSubmitting) {
       return
     }
 
-    const age = calculateAge(formData.birthDate)
-    const isMinor = age < 18
-    const sessionToken = generateSessionToken()
+    setIsSubmitting(true)
 
-    const jotformUrl = buildJotformURL({
-      ...formData,
-      age,
-      isMinor,
-      sessionToken,
-      language: i18n.language
-    })
+    const validationErrors = validateForm()
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      setIsSubmitting(false)
+      return
+    }
 
-    window.location.href = jotformUrl
+    try {
+      const age = calculateAge(formData.birthDate)
+      const isMinor = age < 18
+      const sessionToken = generateSessionToken()
+
+      const jotformUrl = buildJotformURL({
+        ...formData,
+        age,
+        isMinor,
+        sessionToken,
+        language: i18n.language
+      })
+
+      window.location.href = jotformUrl
+    } catch (error) {
+      console.error('Error during form submission:', error)
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -273,23 +286,38 @@ export default function RegistrationForm() {
         />
 
         {/* Birth Date */}
-        <InputWithIcon
-          icon={HiCalendar}
-          label={t('birthDate')}
-          id="birthDate"
-          type="date"
-          placeholder={t('birthDatePlaceholder')}
-          value={formData.birthDate}
-          onChange={(e) => handleChange('birthDate', e.target.value)}
-          onFocus={() => {
-            // Set default date on first focus if empty
-            if (!formData.birthDate) {
-              handleChange('birthDate', '2010-07-14')
-            }
-          }}
-          error={errors.birthDate}
-          isRTL={isRTL}
-        />
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="birthDate">{t('birthDate')}</Label>
+          </div>
+          <div className="relative">
+            <div className={`absolute inset-y-0 flex items-center pointer-events-none ${
+              isRTL ? 'right-0 pr-3' : 'left-0 pl-3'
+            }`}>
+              <HiCalendar className="w-5 h-5 text-gray-500" />
+            </div>
+            <input
+              type="date"
+              id="birthDate"
+              className={`
+                bg-gray-50 border ${errors.birthDate ? 'border-red-500' : 'border-[#c7bfbb]'}
+                text-[#644e43] text-sm rounded-lg
+                focus:ring-[#31b6d8] focus:border-[#31b6d8] block w-full py-2.5
+                transition-all duration-200
+                ${isRTL ? 'pr-10 pl-2.5' : 'pl-10 pr-2.5'}
+                [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer
+              `}
+              placeholder={t('birthDatePlaceholder')}
+              required
+              value={formData.birthDate}
+              onChange={(e) => handleChange('birthDate', e.target.value)}
+              max="2015-07-14"
+            />
+          </div>
+          {errors.birthDate && (
+            <p className="mt-1 text-sm text-red-600">{errors.birthDate}</p>
+          )}
+        </div>
 
         {/* Gender */}
         <div>
@@ -403,9 +431,10 @@ export default function RegistrationForm() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full text-white bg-[#31b6d8] hover:bg-[#b18616] focus:ring-4 focus:ring-[#31b6d8]/30 font-medium rounded-lg text-base px-5 py-3 transition-colors duration-200"
+          disabled={isSubmitting}
+          className="w-full text-white bg-[#31b6d8] hover:bg-[#b18616] focus:ring-4 focus:ring-[#31b6d8]/30 font-medium rounded-lg text-base px-5 py-3 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {t('submit')}
+          {isSubmitting ? 'Submitting...' : t('submit')}
         </button>
       </form>
     </div>
