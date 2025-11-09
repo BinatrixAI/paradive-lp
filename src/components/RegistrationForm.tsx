@@ -66,7 +66,7 @@ const InputWithIcon = ({
           id={id}
           className={`
             bg-gray-50 border ${error ? 'border-red-500' : 'border-[#c7bfbb]'}
-            text-[#644e43] text-sm rounded-lg
+            text-[#644e43] text-base rounded-lg
             focus:ring-[#31b6d8] focus:border-[#31b6d8] block w-full py-2.5
             transition-all duration-200
             ${isRTL ? 'pr-10 pl-2.5' : 'pl-10 pr-2.5'}
@@ -301,7 +301,7 @@ export default function RegistrationForm() {
               id="birthDate"
               className={`
                 bg-gray-50 border ${errors.birthDate ? 'border-red-500' : 'border-[#c7bfbb]'}
-                text-[#644e43] text-sm rounded-lg
+                text-[#644e43] text-base rounded-lg
                 focus:ring-[#31b6d8] focus:border-[#31b6d8] block w-full py-2.5
                 transition-all duration-200
                 ${isRTL ? 'pr-10 pl-2.5' : 'pl-10 pr-2.5'}
@@ -348,7 +348,7 @@ export default function RegistrationForm() {
                       failure: `bg-gray-50 border-red-500 text-[#644e43] focus:border-red-500 focus:ring-red-500`
                     },
                     sizes: {
-                      md: 'p-2.5 text-sm'
+                      md: 'p-2.5 text-base'
                     }
                   }
                 }
@@ -383,7 +383,7 @@ export default function RegistrationForm() {
                         gray: `bg-gray-50 border-[#c7bfbb] text-[#644e43] focus:border-[#31b6d8] focus:ring-[#31b6d8]`
                       },
                       sizes: {
-                        md: 'p-2.5 text-sm'
+                        md: 'p-2.5 text-base'
                       }
                     }
                   }
@@ -411,7 +411,7 @@ export default function RegistrationForm() {
                 id="phone"
                 className={`
                   bg-gray-50 border ${errors.phone ? 'border-red-500' : 'border-[#c7bfbb]'}
-                  text-[#644e43] text-sm rounded-lg
+                  text-[#644e43] text-base rounded-lg
                   focus:ring-[#31b6d8] focus:border-[#31b6d8] block w-full py-2.5
                   transition-all duration-200
                   ${isRTL ? 'pr-10 pl-2.5' : 'pl-10 pr-2.5'}
