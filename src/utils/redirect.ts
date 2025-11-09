@@ -1,5 +1,5 @@
 import { JotformParams } from '@/types/form'
-import { formatPhoneNumber, formatDateForJotform } from './formatting'
+import { formatPhoneNumber } from './formatting'
 
 /**
  * Formats gender value based on language
@@ -22,11 +22,16 @@ function formatGender(gender: string, language: string): string {
 export function buildJotformURL(params: JotformParams): string {
   const baseUrl = 'https://form.jotform.com/253104766327457'
 
+  // Parse birth date into separate day, month, year components
+  const [year, month, day] = params.birthDate.split('-')
+
   const queryParams = new URLSearchParams({
     firstName: params.firstName,
     lastName: params.lastName,
     idNumber: params.idNumber,
-    birthDate: formatDateForJotform(params.birthDate), // Format: DD-MM-YYYY
+    'birthDate[day]': day,
+    'birthDate[month]': month,
+    'birthDate[year]': year,
     gender: formatGender(params.gender, params.language), // Hebrew or English
     phone: formatPhoneNumber(params.phone, params.countryCode), // Digits only
     age: params.age.toString(),
