@@ -1,5 +1,18 @@
 import { JotformParams } from '@/types/form'
-import { formatPhoneNumber } from './formatting'
+import { formatPhoneNumber, formatDateForJotform } from './formatting'
+
+/**
+ * Formats gender value based on language
+ * @param gender - Gender value ('male' or 'female')
+ * @param language - Language code ('he' or 'en')
+ * @returns Formatted gender string
+ */
+function formatGender(gender: string, language: string): string {
+  if (language === 'he') {
+    return gender === 'male' ? 'זכר' : 'נקבה'
+  }
+  return gender
+}
 
 /**
  * Builds Jotform URL with all form parameters
@@ -13,9 +26,9 @@ export function buildJotformURL(params: JotformParams): string {
     firstName: params.firstName,
     lastName: params.lastName,
     idNumber: params.idNumber,
-    birthDate: params.birthDate,
-    gender: params.gender,
-    phone: formatPhoneNumber(params.phone, params.countryCode),
+    birthDate: formatDateForJotform(params.birthDate), // Format: DD-MM-YYYY
+    gender: formatGender(params.gender, params.language), // Hebrew or English
+    phone: formatPhoneNumber(params.phone, params.countryCode), // Digits only
     age: params.age.toString(),
     isMinor: params.isMinor.toString(),
     sessionToken: params.sessionToken,

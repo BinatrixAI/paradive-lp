@@ -1,26 +1,20 @@
 /**
- * Formats phone number with country code
+ * Formats phone number with country code for Jotform (digits only, no dashes)
  * @param phone - Phone number
  * @param countryCode - Country dial code (e.g., "+972")
- * @returns Formatted phone number (e.g., "+972-54-1234567")
+ * @returns Formatted phone number (e.g., "972541234567")
  */
 export function formatPhoneNumber(phone: string, countryCode: string): string {
   // Remove all non-digit characters from phone
   const cleaned = phone.replace(/\D/g, '')
 
-  // For Israeli numbers (972)
-  if (countryCode === '+972') {
-    // Remove leading 0 if present
-    const number = cleaned.startsWith('0') ? cleaned.substring(1) : cleaned
+  // Remove leading 0 if present (common in Israeli numbers)
+  const number = cleaned.startsWith('0') ? cleaned.substring(1) : cleaned
 
-    if (number.length === 9) {
-      // Format: +972-XX-XXXXXXX
-      return `${countryCode}-${number.substring(0, 2)}-${number.substring(2)}`
-    }
-  }
+  // Remove + from country code and concatenate with number (digits only)
+  const countryDigits = countryCode.replace(/\D/g, '')
 
-  // Default format: +country-number
-  return `${countryCode}-${cleaned}`
+  return `${countryDigits}${number}`
 }
 
 /**
@@ -34,6 +28,16 @@ export function formatDate(date: Date | string): string {
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
+}
+
+/**
+ * Formats date to DD-MM-YYYY for Jotform
+ * @param dateString - Date string in YYYY-MM-DD format
+ * @returns Formatted date string in DD-MM-YYYY format
+ */
+export function formatDateForJotform(dateString: string): string {
+  const [year, month, day] = dateString.split('-')
+  return `${day}-${month}-${year}`
 }
 
 /**
