@@ -98,7 +98,7 @@ export default function RegistrationForm() {
     firstName: '',
     lastName: '',
     idNumber: '',
-    birthDate: '2010-07-14', // Default date for better mobile UX
+    birthDate: '1985-07-14', // Default date for better mobile UX
     gender: '',
     phone: '',
     countryCode: '+972'
