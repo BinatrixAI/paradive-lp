@@ -12,19 +12,30 @@ Modern bilingual (Hebrew RTL / English LTR) landing page for Paradive skydiving 
 ## ✨ Features
 
 ### Core Functionality
-- **Bilingual Interface**: Full Hebrew (RTL) and English (LTR) support
-- **Israeli ID Validation**: Real-time validation using Luhn algorithm
+- **Bilingual Interface**: Full Hebrew (RTL) and English (LTR) support with automatic direction switching
+- **Israeli ID Validation**: Real-time validation using Luhn algorithm checksum
 - **Smart Form**: Age calculation, minor detection, and conditional fields
-- **Jotform Integration**: Seamless redirect with URL parameters
-- **Session Tracking**: UUID-based session tokens
+- **Jotform Integration**: Seamless redirect with properly formatted URL parameters
+  - Gender localization (Hebrew: זכר/נקבה, English: male/female)
+  - Phone numbers as digits only (972508147677)
+  - Birth date split into day/month/year parameters
+- **Session Tracking**: Cross-browser UUID generation with mobile Safari fallbacks
+
+### Mobile UX Optimizations
+- **iOS Safari Zoom Prevention**: 16px font size prevents auto-zoom on input focus
+- **Smart Keyboard**: Numeric keyboard for ID number field
+- **Submission Guard**: Prevents duplicate form submissions
+- **Responsive Layout**: Inline phone fields on all screen sizes
+- **Default Values**: Pre-filled birth date (1985-07-14) for better mobile UX
 
 ### Technical Highlights
 - **React 18** with TypeScript (strict mode)
 - **Vite 5** for fast builds and HMR
 - **Flowbite React** components with Tailwind CSS
-- **Cloudflare Workers** deployment with custom domain
-- **GitHub Actions** CI/CD pipeline
+- **Cloudflare Workers** deployment with custom domain (paradive.binatrix.io)
+- **GitHub Actions** CI/CD pipeline with automatic deployments
 - **RTL/LTR Support** via Tailwind logical properties
+- **Cross-Browser Compatible**: Works on all modern browsers including mobile Safari
 
 ### Form Validation
 - Israeli ID (9 digits, Luhn checksum)

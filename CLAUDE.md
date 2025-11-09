@@ -135,13 +135,26 @@ npm run deploy:production # Deploy to production environment
   ```
 - Provide real-time validation feedback with red border + error message
 
-#### 4. Form Data Flow
+#### 4. Form Data Flow & Jotform Integration
 1. Collect fields: firstName, lastName, idNumber, birthDate, gender, phone
 2. Calculate age from birthDate
 3. Determine `isMinor` flag (age < 18)
-4. Generate session token: `crypto.randomUUID()`
-5. Build Jotform URL with all params
+4. Generate session token using cross-browser UUID generator (with fallbacks for mobile Safari)
+5. Build Jotform URL (https://form.jotform.com/253104766327457) with formatted params:
+   - **Gender**: Localized based on language (`"זכר"/"נקבה"` for Hebrew, `"male"/"female"` for English)
+   - **Phone**: Digits only format (`"972508147677"` instead of `"+972-50-8147677"`)
+   - **Birth Date**: Split into three parameters: `birthDate[day]`, `birthDate[month]`, `birthDate[year]`
 6. Redirect: `window.location.href = jotformUrl`
+
+**Default Values:**
+- Birth Date: `1985-07-14` (provides realistic default for adult users)
+- Country Code: `+972` (Israel)
+
+**Cross-Browser UUID Generation:**
+```typescript
+// Tries crypto.randomUUID() → crypto.getRandomValues() → Math.random() fallback
+// Ensures mobile Safari compatibility
+```
 
 ### TypeScript Configuration
 - **Strict mode enabled**: All types must be explicit
@@ -212,6 +225,27 @@ const handleSubmit = (e: React.FormEvent) => {
 - Content paths include `node_modules/flowbite-react/lib/esm/**/*.js`
 - Custom font: Rubik (excellent Hebrew support, loaded from Google Fonts)
 - Primary color palette defined (blue-based, can be customized)
+
+### Mobile UX Optimizations
+
+#### iOS Safari Auto-Zoom Prevention
+- **Critical**: All input fields use `text-base` (16px) font size
+- iOS Safari auto-zooms on inputs with font-size < 16px, causing screen jumping
+- Applied to: text inputs, date input, select dropdowns, phone input
+- This prevents unwanted zoom and maintains stable viewport on mobile
+
+#### Mobile-Specific Features
+- **Numeric Keyboard**: ID Number field uses `inputMode="numeric"` for digit-only keyboard
+- **Default Birth Date**: Pre-filled with `1985-07-14` to avoid empty state on mobile
+- **Inline Phone Layout**: Country code + phone number display inline even on mobile
+- **Submission Guard**: Prevents duplicate form submissions with `isSubmitting` state
+
+#### Cross-Browser Compatibility
+- **UUID Generation**: Fallback chain for session tokens
+  1. `crypto.randomUUID()` - Modern browsers
+  2. `crypto.getRandomValues()` - Mobile Safari
+  3. `Math.random()` - Universal fallback
+- **Date Input**: Native HTML5 date picker with proper default value handling
 
 ## Validation Rules
 
