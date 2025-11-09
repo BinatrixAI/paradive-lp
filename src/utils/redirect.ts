@@ -25,13 +25,11 @@ export function buildJotformURL(params: JotformParams): string {
   // Parse birth date into separate day, month, year components
   const [year, month, day] = params.birthDate.split('-')
 
+  // Build query parameters (excluding birth date which needs special handling)
   const queryParams = new URLSearchParams({
     firstName: params.firstName,
     lastName: params.lastName,
     idNumber: params.idNumber,
-    'birthDate[day]': day,
-    'birthDate[month]': month,
-    'birthDate[year]': year,
     gender: formatGender(params.gender, params.language), // Hebrew or English
     phone: formatPhoneNumber(params.phone, params.countryCode), // Digits only
     age: params.age.toString(),
@@ -40,7 +38,11 @@ export function buildJotformURL(params: JotformParams): string {
     language: params.language
   })
 
-  return `${baseUrl}?${queryParams.toString()}`
+  // Manually append birth date parameters with bracket notation
+  // URLSearchParams doesn't handle brackets well, so we append them manually
+  const url = `${baseUrl}?${queryParams.toString()}&birthDate[day]=${day}&birthDate[month]=${month}&birthDate[year]=${year}`
+
+  return url
 }
 
 /**
